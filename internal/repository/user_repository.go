@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Create(ctx context.Context, u *types.User) (res *types.User, err error) {
+func (r *UserRepository) CreateUser(ctx context.Context, u *types.User) (res *types.User, err error) {
 	sql := `INSERT INTO users (email, name, password)
 			VALUES ($1, $2, $3)
 			RETURNING id, email, name, created_at, updated_at`

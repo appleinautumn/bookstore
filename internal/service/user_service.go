@@ -18,14 +18,14 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) Create(ctx context.Context, req *request.SignUpRequest) (*types.User, error) {
+func (s *UserService) CreateUser(ctx context.Context, req *request.SignUpRequest) (*types.User, error) {
 	user := &types.User{
 		Email:    req.Email,
 		Name:     req.Name,
 		Password: req.Password,
 	}
 
-	res, err := s.repository.Create(ctx, user)
+	res, err := s.repository.CreateUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}

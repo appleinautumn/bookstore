@@ -21,7 +21,7 @@ type Order struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type OrderBook struct {
+type OrderItem struct {
 	OrderID  int64 `json:"order_id"`
 	BookID   int64 `json:"book_id"`
 	Quantity int32 `json:"quantity"`
