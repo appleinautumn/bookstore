@@ -70,16 +70,29 @@ func (h *ApiHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 func (h *ApiHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// get payload
-	var payload request.OrderRequest
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+	userIDHeader := r.Header.Get("user_id")
+
+	// convert user id to int64
+	userID, err := strconv.ParseInt(userIDHeader, 10, 64)
+	if err != nil {
+		slog.Error("CreateOrder", slog.Any("convert error", err))
 		util.WriteErrorf(w, http.StatusBadRequest, err)
 		return
 	}
 
+	// get payload
+	var payload request.OrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+		slog.Error("CreateOrder", slog.Any("decoding error", err))
+		util.WriteErrorf(w, http.StatusBadRequest, err)
+		return
+	}
+
+	payload.UserID = userID
+
 	// validate
 	if errors := util.ValidateRequest(payload); len(errors) > 0 {
-		slog.Error("SignUp", slog.String("error", errors[0]))
+		slog.Error("SignUp", slog.String("validate error", errors[0]))
 		util.WriteError(w, http.StatusBadRequest, errors[0])
 		return
 	}
@@ -87,7 +100,7 @@ func (h *ApiHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// create
 	order, err := h.orderService.CreateOrder(ctx, &payload)
 	if err != nil {
-		slog.Error("SignUp", slog.Any("error", err))
+		slog.Error("SignUp", slog.Any("create error", err))
 		util.WriteErrorf(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -103,7 +116,7 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	// convert user id to int64
 	userID, err := strconv.ParseInt(userIDHeader, 10, 64)
 	if err != nil {
-		slog.Error("ListOrders", slog.Any("error", err))
+		slog.Error("ListOrders", slog.Any("convert error", err))
 		util.WriteErrorf(w, http.StatusBadRequest, err)
 		return
 	}
@@ -111,7 +124,7 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 	// get orders
 	orders, err := h.orderService.ListOrdersByUserId(ctx, userID)
 	if err != nil {
-		slog.Error("ListOrders", slog.Any("error", err))
+		slog.Error("ListOrders", slog.Any("list error", err))
 		util.WriteErrorf(w, http.StatusInternalServerError, err)
 		return
 	}
