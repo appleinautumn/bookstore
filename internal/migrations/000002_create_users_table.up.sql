@@ -1,7 +1,8 @@
-CREATE TABLE IF NOT EXISTS books (
+CREATE TABLE IF NOT EXISTS users (
   "id" BIGSERIAL PRIMARY KEY,
-  "title" TEXT NOT NULL,
-  "author" TEXT, "description" TEXT,
+  "email" TEXT NOT NULL UNIQUE,
+  "name" TEXT NOT NULL,
+  "password" TEXT NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
