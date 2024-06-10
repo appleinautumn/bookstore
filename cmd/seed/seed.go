@@ -56,4 +56,37 @@ func main() {
 		}
 	}
 	fmt.Println("table users seeded")
+
+	// insert to orders
+	sqls = []string{
+		"INSERT INTO orders (user_id) VALUES (1);",
+		"INSERT INTO orders (user_id) VALUES (2);",
+		"INSERT INTO orders (user_id) VALUES (3);",
+		"INSERT INTO orders (user_id) VALUES (4);",
+		"INSERT INTO orders (user_id) VALUES (5);",
+	}
+
+	for _, s := range sqls {
+		_, err := db.Exec(s)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	fmt.Println("table orders seeded")
+
+	// insert to order_books
+	sqls = []string{
+		"INSERT INTO order_books (order_id, book_id, quantity) VALUES (1, 1, 1);",
+		"INSERT INTO order_books (order_id, book_id, quantity) VALUES (1, 2, 2);",
+		"INSERT INTO order_books (order_id, book_id, quantity) VALUES (2, 3, 1);",
+		"INSERT INTO order_books (order_id, book_id, quantity) VALUES (2, 4, 1);",
+		"INSERT INTO order_books (order_id, book_id, quantity) VALUES (3, 5, 1);",
+	}
+	for _, s := range sqls {
+		_, err := db.Exec(s)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	fmt.Println("table order_books seeded")
 }
