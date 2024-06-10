@@ -8,11 +8,13 @@ import (
 	"os"
 
 	"gotu/bookstore/internal/config"
+	"gotu/bookstore/internal/db"
 
 	"github.com/joho/godotenv"
 )
 
 func hello(w http.ResponseWriter, req *http.Request) {
+
 	fmt.Fprintf(w, "hello\n")
 }
 
@@ -45,6 +47,19 @@ func main() {
 	slog.Info("env loaded")
 	slog.Info("config loaded")
 	slog.Info("logging started")
+
+	// Initialize database
+	database, err := db.New(cfg.DbUrl)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer database.Close()
+
+	// Check database connection
+	if err := database.Ping(); err != nil {
+		log.Fatalf("Failed to ping database: %v", err)
+	}
+	slog.Debug("Successfully connected to the database")
 
 	http.HandleFunc("GET /", hello)
 	http.ListenAndServe(fmt.Sprintf(":%s", cfg.AppPort), nil)
