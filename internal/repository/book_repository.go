@@ -1,4 +1,4 @@
-package book
+package repository
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type BookRepository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) *BookRepository {
+func NewBookRepository(db *sql.DB) *BookRepository {
 	return &BookRepository{
 		db: db,
 	}
