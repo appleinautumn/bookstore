@@ -30,8 +30,6 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	log.Println(cfg)
-
 	// Set logging
 	if cfg.LogLevel == "debug" {
 		slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
