@@ -24,11 +24,23 @@ go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@lat
 Run the migration (change the value accordingly)
 
 ```bash
-migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" up
+$ migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" up
+1/u create_books_table (20.470593ms)
 ```
 
 To rollback
 
 ```bash
-migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" down 1
+$ migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" down 1
+1/d create_books_table (41.936181ms)
+```
+
+### Running Seeds
+
+Seeding exists as a separate app since golang-migrate doesn't have seeding feature.
+Run the following command:
+
+```bash
+$ go run cmd/seed/seed.go
+table books seeded
 ```
