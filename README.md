@@ -25,7 +25,8 @@ Run the migration (change the value accordingly)
 
 ```bash
 $ migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" up
-1/u create_books_table (20.470593ms)
+1/u create_books_table (20.701746ms)
+2/u create_users_table (37.867737ms)
 ```
 
 To rollback
