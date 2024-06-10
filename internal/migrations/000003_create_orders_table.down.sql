@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS order_books;
+DROP TABLE IF EXISTS orders;
