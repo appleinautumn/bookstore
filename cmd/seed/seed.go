@@ -23,6 +23,7 @@ func main() {
 	}
 	defer db.Close()
 
+	// insert to books
 	sqls := []string{
 		"INSERT INTO books (title, author, description) VALUES ('The Great Gatsby', 'F. Scott Fitzgerald', 'The Great Gatsby is a 1925 novel by American writer F. Scott Fitzgerald. Set in the Jazz Age on Long Island, near New York City, the novel depicts first-person narrator Nick Carraway''s interactions with mysterious millionaire Jay Gatsby and Gatsby''s obsession to reunite with his former lover, Daisy Buchanan.');",
 		"INSERT INTO books (title, author, description) VALUES ('To Kill a Mockingbird', 'Harper Lee', 'To Kill a Mockingbird is a novel by Harper Lee published in 1960. Instantly successful, widely read in high schools and middle schools in the United States, it has become a classic of modern American literature, winning the Pulitzer Prize.');",
@@ -37,6 +38,22 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-
 	fmt.Println("table books seeded")
+
+	// insert to users
+	sqls = []string{
+		"INSERT INTO users (email, name, password) VALUES ('ann@test.com', 'Ann', 'password');",
+		"INSERT INTO users (email, name, password) VALUES ('bob@test.com', 'Bob', 'password');",
+		"INSERT INTO users (email, name, password) VALUES ('cat@test.com', 'Cat', 'password');",
+		"INSERT INTO users (email, name, password) VALUES ('dan@test.com', 'Dan', 'password');",
+		"INSERT INTO users (email, name, password) VALUES ('eli@test.com', 'Eli', 'password');",
+	}
+
+	for _, s := range sqls {
+		_, err := db.Exec(s)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	fmt.Println("table users seeded")
 }
