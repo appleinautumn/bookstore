@@ -62,7 +62,11 @@ func main() {
 
 	userRepository := repository.NewUserRepository(database)
 	userService := service.NewUserService(userRepository)
-	apiPublicHandler := handler.NewApiHandler(bookService, userService)
+
+	orderRepository := repository.NewOrderRepository(database)
+	orderService := service.NewOrderService(orderRepository)
+
+	apiPublicHandler := handler.NewApiHandler(bookService, userService, orderService)
 
 	// Start server
 	srv := server.NewServer(apiPublicHandler)
