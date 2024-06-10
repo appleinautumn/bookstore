@@ -5,11 +5,12 @@ import (
 	"log/slog"
 	"os"
 
-	"gotu/bookstore/internal/book"
 	"gotu/bookstore/internal/config"
 	"gotu/bookstore/internal/db"
 	"gotu/bookstore/internal/handler"
+	"gotu/bookstore/internal/repository"
 	"gotu/bookstore/internal/server"
+	"gotu/bookstore/internal/service"
 
 	"github.com/joho/godotenv"
 )
@@ -56,9 +57,12 @@ func main() {
 	slog.Info("database connected")
 
 	// Init dependencies
-	bookRepository := book.NewRepository(database)
-	bookService := book.NewService(bookRepository)
-	apiPublicHandler := handler.NewApiHandler(bookService)
+	bookRepository := repository.NewBookRepository(database)
+	bookService := service.NewBookService(bookRepository)
+
+	userRepository := repository.NewUserRepository(database)
+	userService := service.NewUserService(userRepository)
+	apiPublicHandler := handler.NewApiHandler(bookService, userService)
 
 	// Start server
 	srv := server.NewServer(apiPublicHandler)
