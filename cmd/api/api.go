@@ -1,22 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"log/slog"
-	"net/http"
 	"os"
 
+	"gotu/bookstore/internal/book"
 	"gotu/bookstore/internal/config"
 	"gotu/bookstore/internal/db"
+	"gotu/bookstore/internal/handler"
+	"gotu/bookstore/internal/server"
 
 	"github.com/joho/godotenv"
 )
-
-func hello(w http.ResponseWriter, req *http.Request) {
-
-	fmt.Fprintf(w, "hello\n")
-}
 
 func main() {
 	// Load env
@@ -57,8 +53,16 @@ func main() {
 	if err := database.Ping(); err != nil {
 		log.Fatalf("Failed to ping database: %v", err)
 	}
-	slog.Debug("Successfully connected to the database")
+	slog.Info("database connected")
 
-	http.HandleFunc("GET /", hello)
-	http.ListenAndServe(fmt.Sprintf(":%s", cfg.AppPort), nil)
+	// Init dependencies
+	bookRepository := book.NewRepository(database)
+	bookService := book.NewService(bookRepository)
+	apiPublicHandler := handler.NewApiHandler(bookService)
+
+	// Start server
+	srv := server.NewServer(apiPublicHandler)
+	if err := srv.Start(cfg.AppPort); err != nil {
+		log.Fatal(err)
+	}
 }
