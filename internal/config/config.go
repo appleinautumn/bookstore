@@ -10,6 +10,7 @@ type Config struct {
 	AppName    string
 	AppPort    string
 	AppVersion string
+	LogLevel   string
 }
 
 var configImpl *Config
@@ -36,11 +37,14 @@ func New() (*Config, error) {
 		return nil, errors.New("APP_VERSION env is required")
 	}
 
+	logLevel := getEnv("LOG_LEVEL", "info")
+
 	configImpl = &Config{
 		AppEnv:     appEnv,
 		AppName:    appName,
 		AppPort:    appPort,
 		AppVersion: appVersion,
+		LogLevel:   logLevel,
 	}
 	return configImpl, nil
 }
