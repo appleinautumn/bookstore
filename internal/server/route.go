@@ -17,6 +17,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 func NewRouter(apiHandler *handler.ApiHandler) *mux.Router {
 	r := mux.NewRouter()
 
+	r.HandleFunc("/signup", apiHandler.SignUp).Methods("POST")
 	r.HandleFunc("/books", apiHandler.ListBooks).Methods("GET")
 	r.HandleFunc("/", root)
 
