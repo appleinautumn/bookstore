@@ -89,9 +89,9 @@ func TestList(t *testing.T) {
 	t.Run("error - scan", func(t *testing.T) {
 		sql := "SELECT id, title, author, description, created_at, updated_at FROM books"
 
-		// "123" is not a valid id
+		// "abc" is not a valid id
 		mockRows := sqlmock.NewRows([]string{"id", "title", "author", "description", "created_at", "updated_at"}).
-			AddRow("123", b1.Title, b1.Author, b1.Description, b1.CreatedAt, b1.UpdatedAt)
+			AddRow("abc", b1.Title, b1.Author, b1.Description, b1.CreatedAt, b1.UpdatedAt)
 
 		mock.ExpectQuery(sql).WillReturnRows(mockRows)
 
