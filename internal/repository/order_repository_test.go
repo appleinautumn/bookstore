@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"gotu/bookstore/internal/types"
 	"testing"
+
+	"gotu/bookstore/internal/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
@@ -19,7 +20,7 @@ func TestCreateOrder(t *testing.T) {
 	// create order repo
 	repo := NewOrderRepository(db)
 
-	// mock user 1
+	// mock order
 	var o1 types.Order
 	if err := faker.FakeData(&o1); err != nil {
 		t.Errorf("err: %v", err)
@@ -71,6 +72,41 @@ func TestCreateOrder(t *testing.T) {
 		// create and error
 		if _, err := repo.CreateOrder(ctx, &o1); err == nil {
 			t.Errorf("expecting an error, but there was none")
+		}
+
+		// make sure all expectations were met
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled expectations: %s", err)
+		}
+	})
+}
+
+func TestCreateOrderItem(t *testing.T) {
+	ctx := context.Background()
+
+	// mock db
+	db, mock := NewMock()
+	defer db.Close()
+
+	// create order repo
+	repo := NewOrderRepository(db)
+
+	// mock order item
+	var oi types.OrderItem
+	if err := faker.FakeData(&oi); err != nil {
+		t.Errorf("err: %v", err)
+	}
+
+	t.Run("success", func(t *testing.T) {
+		sql := `INSERT INTO order_books \(order_id, book_id, quantity\)
+				VALUES \(\$1, \$2, \$3\)`
+
+		// not expecting to return anything
+		mock.ExpectQuery(sql).WithArgs(oi.OrderID, oi.BookID, oi.Quantity).WillReturnRows(sqlmock.NewRows(nil))
+
+		// create order item
+		if err := repo.CreateOrderItem(ctx, &oi); err != nil {
+			t.Errorf("not expecting an error: %s", err)
 		}
 
 		// make sure all expectations were met

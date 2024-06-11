@@ -2,8 +2,9 @@ package repository
 
 import (
 	"context"
-	"gotu/bookstore/internal/types"
 	"testing"
+
+	"gotu/bookstore/internal/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
