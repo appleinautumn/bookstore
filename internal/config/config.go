@@ -56,14 +56,6 @@ func New() (*Config, error) {
 	return configImpl, nil
 }
 
-func GetConfig() (*Config, error) {
-	if configImpl == nil {
-		return nil, errors.New("config has not been initialized")
-	}
-
-	return configImpl, nil
-}
-
 func getEnv(key string, defaultVal string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
