@@ -2,36 +2,23 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"gotu/bookstore/internal/types"
-	"log"
-	"os"
 	"testing"
+
+	"gotu/bookstore/internal/types"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/go-faker/faker/v4"
 )
 
-func TestMain(m *testing.M) {
-	os.Setenv("APP_ENV", "test")
-	os.Exit(m.Run())
-}
-
-func NewMock() (*sql.DB, sqlmock.Sqlmock) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		log.Fatalf("error opening a stub database connection: '%s'", err)
-	}
-
-	return db, mock
-}
-
 func TestList(t *testing.T) {
 	ctx := context.Background()
 
+	// mock db
 	db, mock := NewMock()
 	defer db.Close()
+
+	// create book repo
 	repo := NewBookRepository(db)
 
 	// mock book 1
