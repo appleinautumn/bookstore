@@ -48,3 +48,23 @@ Run the following command:
 $ go run cmd/seed/seed.go
 table books seeded
 ```
+
+## Testing
+
+Run testing with coverage
+
+```bash
+go test -coverprofile=coverage.out ./...
+```
+
+Show coverage detail
+
+```bash
+go tool cover -func=coverage.out
+```
+
+Show coverage detail as HTML
+
+```bash
+go tool cover -html=coverage.out
+```
