@@ -10,17 +10,17 @@ import (
 	"gotu/bookstore/internal/types"
 )
 
-type OrderService struct {
+type orderService struct {
 	repository *repository.OrderRepository
 }
 
-func NewOrderService(repo *repository.OrderRepository) *OrderService {
-	return &OrderService{
+func NewOrderService(repo *repository.OrderRepository) *orderService {
+	return &orderService{
 		repository: repo,
 	}
 }
 
-func (s *OrderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.Order, error) {
+func (s *orderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.Order, error) {
 	orders, err := s.repository.ListOrdersByUserId(ctx, userID)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (s *OrderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]
 	return orders, nil
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, req *request.OrderRequest) (*types.Order, error) {
+func (s *orderService) CreateOrder(ctx context.Context, req *request.OrderRequest) (*types.Order, error) {
 	order := &types.Order{
 		UserID: req.UserID,
 	}

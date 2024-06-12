@@ -8,17 +8,17 @@ import (
 	"gotu/bookstore/internal/types"
 )
 
-type UserService struct {
+type userService struct {
 	repository *repository.UserRepository
 }
 
-func NewUserService(repo *repository.UserRepository) *UserService {
-	return &UserService{
+func NewUserService(repo *repository.UserRepository) *userService {
+	return &userService{
 		repository: repo,
 	}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, req *request.SignUpRequest) (*types.User, error) {
+func (s *userService) CreateUser(ctx context.Context, req *request.SignUpRequest) (*types.User, error) {
 	user := &types.User{
 		Email:    req.Email,
 		Name:     req.Name,

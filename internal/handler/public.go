@@ -12,12 +12,12 @@ import (
 )
 
 type ApiHandler struct {
-	bookService  *service.BookService
-	userService  *service.UserService
-	orderService *service.OrderService
+	bookService  service.BookService
+	userService  service.UserService
+	orderService service.OrderService
 }
 
-func NewApiHandler(sv1 *service.BookService, sv2 *service.UserService, sv3 *service.OrderService) *ApiHandler {
+func NewApiHandler(sv1 service.BookService, sv2 service.UserService, sv3 service.OrderService) *ApiHandler {
 	return &ApiHandler{
 		bookService:  sv1,
 		userService:  sv2,
