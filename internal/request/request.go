@@ -12,6 +12,6 @@ type OrderItem struct {
 }
 
 type OrderRequest struct {
-	Orders []OrderItem `json:"orders"`
-	UserID int64       `json:"user_id"`
+	Orders []*OrderItem `json:"orders"`
+	UserID int64        `json:"user_id"`
 }
