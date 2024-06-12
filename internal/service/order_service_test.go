@@ -51,6 +51,7 @@ func TestListOrdersByUserId(t *testing.T) {
 	})
 
 	t.Run("error - ListOrdersByUserId error", func(t *testing.T) {
+
 		// mock order1
 		var order1 types.Order
 		if err := faker.FakeData(&order1); err != nil {
@@ -104,7 +105,7 @@ func TestCreateOrder(t *testing.T) {
 		}
 
 		repository.On("CreateOrder", mock.Anything, mock.Anything).Return(&order1, nil).Once()
-		repository.On("CreateOrderItem", mock.Anything, mock.Anything).Return(nil)
+		repository.On("CreateOrderItem", mock.Anything, mock.Anything).Return(nil).Twice()
 		service := NewOrderService(repository)
 
 		// create
@@ -143,9 +144,24 @@ func TestCreateOrder(t *testing.T) {
 	})
 
 	t.Run("error - create order error", func(t *testing.T) {
-		// mock order request - empty order
+		// mock order item 1
+		var item1 request.OrderItem
+		if err := faker.FakeData(&item1); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock order item 2
+		var item2 request.OrderItem
+		if err := faker.FakeData(&item2); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock order request
 		orderReq := request.OrderRequest{
-			Orders: []*request.OrderItem{},
+			Orders: []*request.OrderItem{
+				&item1,
+				&item2,
+			},
 			UserID: int64(rand.IntN(100)),
 		}
 
@@ -155,7 +171,7 @@ func TestCreateOrder(t *testing.T) {
 			t.Errorf("err: %v", err)
 		}
 
-		repository.On("CreateOrder", mock.Anything, mock.Anything).Return(nil, errors.New("error"))
+		repository.On("CreateOrder", mock.Anything, mock.Anything).Return(nil, errors.New("error")).Once()
 		service := NewOrderService(repository)
 
 		// create
@@ -167,9 +183,24 @@ func TestCreateOrder(t *testing.T) {
 	})
 
 	t.Run("error - create order item error", func(t *testing.T) {
-		// mock order request - empty order
+		// mock order item 1
+		var item1 request.OrderItem
+		if err := faker.FakeData(&item1); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock order item 2
+		var item2 request.OrderItem
+		if err := faker.FakeData(&item2); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock order request
 		orderReq := request.OrderRequest{
-			Orders: []*request.OrderItem{},
+			Orders: []*request.OrderItem{
+				&item1,
+				&item2,
+			},
 			UserID: int64(rand.IntN(100)),
 		}
 
@@ -179,11 +210,11 @@ func TestCreateOrder(t *testing.T) {
 			t.Errorf("err: %v", err)
 		}
 
-		repository.On("CreateOrder", mock.Anything, mock.Anything).Return(&order1, nil)
-		repository.On("CreateOrderItem", mock.Anything, mock.Anything).Return(nil, errors.New("error"))
+		repository.On("CreateOrder", mock.Anything, mock.Anything).Return(&order1, nil).Once()
+		repository.On("CreateOrderItem", mock.Anything, mock.Anything).Return(errors.New("order item insert error"))
 		service := NewOrderService(repository)
 
-		// create
+		// create and throw error
 		res, err := service.CreateOrder(context.TODO(), &orderReq)
 
 		// assert
