@@ -16,6 +16,62 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func TestListOrdersByUserId(t *testing.T) {
+	repository := mocks.NewOrderRepository(t)
+
+	t.Run("success", func(t *testing.T) {
+		// mock order1
+		var order1 types.Order
+		if err := faker.FakeData(&order1); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		var order2 types.Order
+		if err := faker.FakeData(&order2); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock orders
+		orders := []*types.Order{
+			&order1,
+			&order2,
+		}
+
+		repository.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(orders, nil).Once()
+		service := NewOrderService(repository)
+
+		userID := int64(rand.IntN(100))
+
+		// create
+		res, err := service.ListOrdersByUserId(context.TODO(), userID)
+
+		// assert
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
+	})
+
+	t.Run("error - ListOrdersByUserId error", func(t *testing.T) {
+		// mock order1
+		var order1 types.Order
+		if err := faker.FakeData(&order1); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		repository.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(nil, errors.New("error"))
+		service := NewOrderService(repository)
+
+		userID := int64(rand.IntN(100))
+
+		// create
+		res, err := service.ListOrdersByUserId(context.TODO(), userID)
+
+		// assert
+		assert.Error(t, err)
+		assert.Nil(t, res)
+	})
+
+}
+
 func TestCreateOrder(t *testing.T) {
 	repository := mocks.NewOrderRepository(t)
 
