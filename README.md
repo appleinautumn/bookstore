@@ -9,6 +9,32 @@ This project is developed with:
 - Go 1.22
 - Postgres 16
 
+## Installation
+
+Clone the project
+
+```bash
+git clone git@github.com:appleinautumn/bookstore.git
+```
+
+Go to the project directory
+
+```bash
+cd bookstore
+```
+
+This service contains a `.env.example` file that defines environment variables you need to set. Copy and set the variables to a new `.env` file.
+
+```bash
+cp .env.example .env
+```
+
+Start the app
+
+```bash
+go run cmd/api/api.go
+```
+
 ## Database
 
 If you have not created the database for Book Store service, please create one before going to the next step.
