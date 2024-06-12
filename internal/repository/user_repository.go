@@ -7,17 +7,17 @@ import (
 	"gotu/bookstore/internal/types"
 )
 
-type UserRepository struct {
+type userRepository struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{
+func NewUserRepository(db *sql.DB) *userRepository {
+	return &userRepository{
 		db: db,
 	}
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, u *types.User) (res *types.User, err error) {
+func (r *userRepository) CreateUser(ctx context.Context, u *types.User) (res *types.User, err error) {
 	sql := `INSERT INTO users (email, name, password)
 			VALUES ($1, $2, $3)
 			RETURNING id, email, name, created_at, updated_at`

@@ -8,17 +8,17 @@ import (
 	"gotu/bookstore/internal/types"
 )
 
-type BookRepository struct {
+type bookRepository struct {
 	db *sql.DB
 }
 
-func NewBookRepository(db *sql.DB) *BookRepository {
-	return &BookRepository{
+func NewBookRepository(db *sql.DB) *bookRepository {
+	return &bookRepository{
 		db: db,
 	}
 }
 
-func (r *BookRepository) List(ctx context.Context) (res []*types.Book, err error) {
+func (r *bookRepository) List(ctx context.Context) (res []*types.Book, err error) {
 	var sb strings.Builder
 
 	sb.WriteString("SELECT id, title, author, description, created_at, updated_at FROM books")

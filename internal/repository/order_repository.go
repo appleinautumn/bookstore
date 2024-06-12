@@ -9,17 +9,17 @@ import (
 	"gotu/bookstore/internal/types"
 )
 
-type OrderRepository struct {
+type orderRepository struct {
 	db *sql.DB
 }
 
-func NewOrderRepository(db *sql.DB) *OrderRepository {
-	return &OrderRepository{
+func NewOrderRepository(db *sql.DB) *orderRepository {
+	return &orderRepository{
 		db: db,
 	}
 }
 
-func (r *OrderRepository) ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.Order, err error) {
+func (r *orderRepository) ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.Order, err error) {
 	var sb strings.Builder
 
 	sb.WriteString("SELECT id, user_id, created_at, updated_at FROM orders WHERE user_id = $1")
@@ -46,7 +46,7 @@ func (r *OrderRepository) ListOrdersByUserId(ctx context.Context, userID int64) 
 	return res, nil
 }
 
-func (r *OrderRepository) CreateOrder(ctx context.Context, o *types.Order) (res *types.Order, err error) {
+func (r *orderRepository) CreateOrder(ctx context.Context, o *types.Order) (res *types.Order, err error) {
 	sql := `INSERT INTO orders (user_id)
 			VALUES ($1)
 			RETURNING id, user_id, created_at, updated_at`
@@ -64,7 +64,7 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, o *types.Order) (res 
 	return o, nil
 }
 
-func (r *OrderRepository) CreateOrderItem(ctx context.Context, o *types.OrderItem) (err error) {
+func (r *orderRepository) CreateOrderItem(ctx context.Context, o *types.OrderItem) (err error) {
 	sql := `INSERT INTO order_books (order_id, book_id, quantity)
 			VALUES ($1, $2, $3)`
 
