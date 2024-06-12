@@ -9,7 +9,6 @@ require (
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/bxcodec/faker v2.0.1+incompatible
 	github.com/go-faker/faker/v4 v4.4.2
 	github.com/go-playground/validator/v10 v10.21.0
 	github.com/gorilla/mux v1.8.1
