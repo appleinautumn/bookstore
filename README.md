@@ -62,7 +62,7 @@ To rollback
 
 ```bash
 $ migrate -path internal/migrations -database "postgres://postgres:password@127.0.0.1:5432/database?sslmode=disable&search_path=public" down 1
-1/d create_books_table (41.936181ms)
+4/d create_order_books_table (18.151815ms)
 ```
 
 ### Running Seeds
@@ -74,6 +74,147 @@ Run the following command:
 $ go run cmd/seed/seed.go
 table books seeded
 ```
+
+## API Routes
+
+### Public Routes
+
+#### List Books
+
+<details>
+ <summary><code>POST</code> <code><b>/books</b></code></summary>
+
+##### Request Body
+
+> None
+
+##### Responses
+
+> | http code | content-type                      | response                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+> | --------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json; charset=UTF-8` | `{"data":[{"id":1,"title":"The Great Gatsby","author":{"String":"F. Scott Fitzgerald","Valid":true},"description":{"String":"The Great Gatsby is a 1925 novel by American writer F. Scott Fitzgerald. Set in the Jazz Age on Long Island, near New York City, the novel depicts first-person narrator Nick Carraway's interactions with mysterious millionaire Jay Gatsby and Gatsby's obsession to reunite with his former lover, Daisy Buchanan.","Valid":true},"created_at":"2024-06-12T14:04:01.875488Z","updated_at":"2024-06-12T14:04:01.875488Z"},{"id":2,"title":"To Kill a Mockingbird","author":{"String":"Harper Lee","Valid":true},"description":{"String":"To Kill a Mockingbird is a novel by Harper Lee published in 1960. Instantly successful, widely read in high schools and middle schools in the United States, it has become a classic of modern American literature, winning the Pulitzer Prize.","Valid":true},"created_at":"2024-06-12T14:04:01.877057Z","updated_at":"2024-06-12T14:04:01.877057Z"}]}` |
+
+##### Example cURL
+
+> ```javascript
+>  curl --location 'http://localhost:8080/books'
+> ```
+
+</details>
+
+#### Sign Up
+
+<details>
+ <summary><code>POST</code> <code><b>/signup</b></code></summary>
+
+##### Request Body
+
+> | name     | type     | data type | description |
+> | -------- | -------- | --------- | ----------- |
+> | Email    | required | string    | N/A         |
+> | Name     | required | string    | N/A         |
+> | Password | required | string    | N/A         |
+
+##### Responses
+
+> | http code | content-type                      | response                                                                                                                                                         |
+> | --------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `201`     | `application/json; charset=UTF-8` | `{"data":{"id":8,"email":"h2h@test.com","name":"fg","password":"passss","created_at":"2024-06-12T14:19:15.792706Z","updated_at":"2024-06-12T14:19:15.792706Z"}}` |
+> | `400`     | `application/json; charset=UTF-8` | `{"error":{"message":"`email`must be`required=`"}}`                                                                                                              |
+> | `500`     | `application/json; charset=UTF-8` | `{"error": {"message": "pq: duplicate key value violates unique constraint \"users_email_key\""}}`                                                               |
+
+##### Example cURL
+
+> ```javascript
+> curl --location 'http://localhost:8080/signup' \
+> --header 'Content-Type: application/json' \
+> --data-raw '{
+>     "email":"h2h@test.com",
+>     "name":"fg",
+>     "password":"passss"
+> }'
+> ```
+
+</details>
+
+### Private Routes
+
+#### Order
+
+<details>
+ <summary><code>POST</code> <code><b>/orders</b></code></summary>
+
+##### Headers
+
+> | key     | value    | data type | description |
+> | ------- | -------- | --------- | ----------- |
+> | user_id | required | string    | N/A         |
+
+##### Request Body
+
+> | name   | type     | data type | description |
+> | ------ | -------- | --------- | ----------- |
+> | orders | required | array     | N/A         |
+
+##### Responses
+
+> | http code | content-type                      | response                                                                                                                   |
+> | --------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json; charset=UTF-8` | `{"data":{"id":7,"user_id":6,"created_at":"2024-06-12T14:26:45.095904Z","updated_at":"2024-06-12T14:26:45.095904Z"}}`      |
+> | `400`     | `application/json; charset=UTF-8` | `{"error":{"message":"EOF"}}`                                                                                              |
+> | `500`     | `application/json; charset=UTF-8` | `{"error":{"message":"pq: insert or update on table \"orders\" violates foreign key constraint \"orders_user_id_fkey\""}}` |
+
+##### Example cURL
+
+> ```javascript
+> curl --location 'http://localhost:8080/orders' \
+> --header 'user_id: 6' \
+> --header 'Content-Type: application/json' \
+> --data '{
+>   "orders": [
+>     {
+>       "book_id": 1,
+>       "quantity": 2
+>     },
+>     {
+>       "book_id": 5,
+>       "quantity": 1
+>     }
+>   ]
+> }'
+> ```
+
+</details>
+
+#### List Orders
+
+<details>
+ <summary><code>GET</code> <code><b>/orders</b></code></summary>
+
+##### Headers
+
+> | key     | value    | data type | description |
+> | ------- | -------- | --------- | ----------- |
+> | user_id | required | string    | N/A         |
+
+##### Request Body
+
+> None
+
+##### Responses
+
+> | http code | content-type                      | response                                                                                                                |
+> | --------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json; charset=UTF-8` | `{"data":[{"id":5,"user_id":5,"created_at":"2024-06-12T14:04:01.887702Z","updated_at":"2024-06-12T14:04:01.887702Z"}]}` |
+
+##### Example cURL
+
+> ```javascript
+> curl --location 'http://localhost:8080/orders' \
+> --header 'user_id: 5'
+> ```
+
+</details>
 
 ## Testing
 
