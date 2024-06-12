@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"log/slog"
 
 	"gotu/bookstore/internal/repository"
 	"gotu/bookstore/internal/request"
@@ -33,19 +32,18 @@ func (s *orderService) CreateOrder(ctx context.Context, req *request.OrderReques
 	order := &types.Order{
 		UserID: req.UserID,
 	}
-	slog.Info("Order created", slog.Int("req.Orders", len(req.Orders)))
 
 	if len(req.Orders) == 0 {
 		return nil, errors.New("item is empty")
 	}
 
-	// insert order
+	// create order
 	res, err := s.repository.CreateOrder(ctx, order)
 	if err != nil {
 		return nil, err
 	}
 
-	// insert order items
+	// create order items
 	for _, o := range req.Orders {
 		if err := s.repository.CreateOrderItem(ctx, &types.OrderItem{
 			OrderID:  res.ID,
@@ -55,7 +53,6 @@ func (s *orderService) CreateOrder(ctx context.Context, req *request.OrderReques
 			return nil, err
 		}
 	}
-	slog.Info("Order items created", slog.Any("res", res))
 
 	return res, nil
 }

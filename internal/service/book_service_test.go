@@ -10,7 +10,7 @@ import (
 	"gotu/bookstore/internal/repository/mocks"
 	"gotu/bookstore/internal/types"
 
-	"github.com/bxcodec/faker"
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
