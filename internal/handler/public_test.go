@@ -19,13 +19,82 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type Response struct {
-	Data *types.User `json:"data"`
-}
-
 func TestMain(m *testing.M) {
 	os.Setenv("APP_ENV", "test")
 	os.Exit(m.Run())
+}
+
+func TestListBooks(t *testing.T) {
+	bookService := mocks.NewBookService(t)
+	orderService := mocks.NewOrderService(t)
+	userService := mocks.NewUserService(t)
+	handler := NewApiHandler(bookService, userService, orderService)
+
+	t.Run("success", func(t *testing.T) {
+		// mock book 1
+		var b1 types.Book
+		if err := faker.FakeData(&b1); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock book 2
+		var b2 types.Book
+		if err := faker.FakeData(&b2); err != nil {
+			t.Errorf("err: %v", err)
+		}
+
+		// mock books
+		books := []*types.Book{
+			&b1,
+			&b2,
+		}
+
+		// mock List
+		bookService.On("List", mock.Anything, mock.Anything).Return(books, nil).Once()
+
+		req := httptest.NewRequest(http.MethodGet, "/books", nil)
+		res := httptest.NewRecorder()
+
+		// list books
+		handler.ListBooks(res, req)
+		defer res.Result().Body.Close()
+
+		// get body
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			t.Fatalf("Error reading body: %v", err)
+		}
+
+		// Create a variable of the wrapper with literal struct
+		var response struct {
+			Data []*types.Book `json:"data"`
+		}
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			t.Fatalf("Error unmarshaling JSON: %v", err)
+		}
+
+		data := response.Data
+
+		// assert
+		assert.Equal(t, res.Code, http.StatusOK)
+		assert.Equal(t, len(data), len(books))
+	})
+
+	t.Run("error - create error", func(t *testing.T) {
+		// mock List to throw error
+		bookService.On("List", mock.Anything, mock.Anything).Return(nil, errors.New("anything")).Once()
+
+		req := httptest.NewRequest(http.MethodPost, "/books", nil)
+		res := httptest.NewRecorder()
+
+		// list books
+		handler.ListBooks(res, req)
+		defer res.Result().Body.Close()
+
+		// assert
+		assert.Equal(t, res.Code, http.StatusInternalServerError)
+	})
 }
 
 func TestSignUp(t *testing.T) {
@@ -69,18 +138,16 @@ func TestSignUp(t *testing.T) {
 		handler.SignUp(res, req)
 		defer res.Result().Body.Close()
 
-		if status := res.Code; status != http.StatusOK {
-			t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-		}
-
 		// get body
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
 			t.Fatalf("Error reading body: %v", err)
 		}
 
-		// Create a variable of the wrapper struct type
-		var response Response
+		// Create a variable of the wrapper with literal struct
+		var response struct {
+			Data *types.User `json:"data"`
+		}
 		err = json.Unmarshal(body, &response)
 		if err != nil {
 			t.Fatalf("Error unmarshaling JSON: %v", err)
