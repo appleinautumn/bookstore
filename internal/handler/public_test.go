@@ -543,5 +543,4 @@ func TestListOrders(t *testing.T) {
 		// assert
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 	})
-
 }

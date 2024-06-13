@@ -16,7 +16,10 @@ func WriteJson(w http.ResponseWriter, code int, data interface{}) {
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(code)
-	w.Write(response)
+	if _, err := w.Write(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func WriteError(w http.ResponseWriter, code int, errMessage string) {
@@ -32,7 +35,10 @@ func WriteError(w http.ResponseWriter, code int, errMessage string) {
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(code)
-	w.Write(response)
+	if _, err := w.Write(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func WriteErrorf(w http.ResponseWriter, code int, data error) {
@@ -48,5 +54,8 @@ func WriteErrorf(w http.ResponseWriter, code int, data error) {
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(code)
-	w.Write(response)
+	if _, err := w.Write(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
