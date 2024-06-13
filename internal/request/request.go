@@ -7,11 +7,11 @@ type SignUpRequest struct {
 }
 
 type OrderItem struct {
-	BookID   int `json:"book_id"`
-	Quantity int `json:"quantity"`
+	BookID   int `json:"book_id" validate:"required"`
+	Quantity int `json:"quantity" validate:"required"`
 }
 
 type OrderRequest struct {
-	Orders []*OrderItem `json:"orders"`
+	Orders []*OrderItem `json:"orders" validate:"required"`
 	UserID int64        `json:"user_id"`
 }

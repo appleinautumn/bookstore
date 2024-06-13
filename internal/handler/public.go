@@ -75,7 +75,7 @@ func (h *ApiHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// convert user id to int64
 	userID, err := strconv.ParseInt(userIDHeader, 10, 64)
 	if err != nil {
-		slog.Error("CreateOrder", slog.Any("convert error", err))
+		slog.Error("CreateOrder", slog.Any("error", err))
 		util.WriteErrorf(w, http.StatusBadRequest, err)
 		return
 	}
@@ -83,7 +83,7 @@ func (h *ApiHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// get payload
 	var payload request.OrderRequest
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		slog.Error("CreateOrder", slog.Any("decoding error", err))
+		slog.Error("CreateOrder", slog.Any("error", err))
 		util.WriteErrorf(w, http.StatusBadRequest, err)
 		return
 	}
@@ -100,7 +100,7 @@ func (h *ApiHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	// create
 	order, err := h.orderService.CreateOrder(ctx, &payload)
 	if err != nil {
-		slog.Error("SignUp", slog.Any("create error", err))
+		slog.Error("SignUp", slog.Any("error", err))
 		util.WriteErrorf(w, http.StatusInternalServerError, err)
 		return
 	}
