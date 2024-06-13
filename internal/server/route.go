@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"gotu/bookstore/internal/handler"
+	"gotu/bookstore/internal/middleware"
 
 	"github.com/gorilla/mux"
 )
@@ -22,6 +23,7 @@ func NewRouter(apiHandler *handler.ApiHandler) *mux.Router {
 
 	// private endpoints
 	my := r.PathPrefix("/my").Subrouter()
+	my.Use(middleware.Authenticated) // must be authenticated
 	my.HandleFunc("/orders", apiHandler.ListOrders).Methods("GET")
 	my.HandleFunc("/orders", apiHandler.CreateOrder).Methods("POST")
 
