@@ -2,8 +2,9 @@ package server
 
 import (
 	"fmt"
-	"gotu/bookstore/internal/handler"
 	"net/http"
+
+	"gotu/bookstore/internal/handler"
 
 	"github.com/gorilla/mux"
 )
