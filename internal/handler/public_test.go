@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -31,6 +32,7 @@ func TestSignUp(t *testing.T) {
 	bookService := mocks.NewBookService(t)
 	orderService := mocks.NewOrderService(t)
 	userService := mocks.NewUserService(t)
+	handler := NewApiHandler(bookService, userService, orderService)
 
 	t.Run("success", func(t *testing.T) {
 		// load location for New York
@@ -57,8 +59,8 @@ func TestSignUp(t *testing.T) {
 		}
 		payloadJson, _ := json.Marshal(payload)
 
+		// mock CreateUser
 		userService.On("CreateUser", mock.Anything, mock.Anything).Return(user, nil).Once()
-		handler := NewApiHandler(bookService, userService, orderService)
 
 		req := httptest.NewRequest(http.MethodPost, "/signup", bytes.NewReader(payloadJson))
 		res := httptest.NewRecorder()
@@ -91,5 +93,92 @@ func TestSignUp(t *testing.T) {
 		assert.Equal(t, user.ID, user2.ID)
 		assert.Equal(t, user.Email, user2.Email)
 		assert.Equal(t, user.Password, user2.Password)
+	})
+
+	t.Run("error - decoding payload", func(t *testing.T) {
+		// set invalid payload
+		payload := "abc"
+		payloadJson, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPost, "/signup", bytes.NewReader(payloadJson))
+		res := httptest.NewRecorder()
+
+		// list
+		handler.SignUp(res, req)
+		defer res.Result().Body.Close()
+
+		// assert
+		assert.Equal(t, res.Code, http.StatusBadRequest)
+	})
+
+	t.Run("error - missing payloads", func(t *testing.T) {
+		// set invalid payload
+		tests := map[string]struct {
+			params     map[string]interface{}
+			statusCode int
+		}{
+			"missing email": {
+				map[string]interface{}{
+					"name":     "成龍",
+					"password": "123456",
+				},
+				http.StatusBadRequest,
+			},
+			"missing name": {
+				map[string]interface{}{
+					"email":    "cheng@long.com",
+					"password": "123456",
+				},
+				http.StatusBadRequest,
+			},
+			"missing password": {
+				map[string]interface{}{
+					"email": "cheng@long.com",
+					"name":  "成龍",
+				},
+				http.StatusBadRequest,
+			},
+			"without params": {
+				map[string]interface{}{},
+				http.StatusBadRequest,
+			},
+		}
+
+		for _, tt := range tests {
+			payloadJson, _ := json.Marshal(tt.params)
+
+			req := httptest.NewRequest(http.MethodPost, "/signup", bytes.NewReader(payloadJson))
+			res := httptest.NewRecorder()
+
+			// list
+			handler.SignUp(res, req)
+			defer res.Result().Body.Close()
+
+			// assert
+			assert.Equal(t, res.Code, tt.statusCode)
+		}
+	})
+
+	t.Run("error - create error", func(t *testing.T) {
+		// mock CreateUser to throw error
+		userService.On("CreateUser", mock.Anything, mock.Anything).Return(nil, errors.New("anything")).Once()
+
+		// set payload
+		payload := map[string]interface{}{
+			"email":    "cheng@long.com",
+			"name":     "成龍",
+			"password": "123456",
+		}
+		payloadJson, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPost, "/signup", bytes.NewReader(payloadJson))
+		res := httptest.NewRecorder()
+
+		// list
+		handler.SignUp(res, req)
+		defer res.Result().Body.Close()
+
+		// assert
+		assert.Equal(t, res.Code, http.StatusInternalServerError)
 	})
 }
