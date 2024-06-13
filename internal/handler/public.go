@@ -36,7 +36,7 @@ func (h *ApiHandler) ListBooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.WriteJson(w, http.StatusOK, books)
+	util.WriteJson(w, http.StatusOK, toBookListContract(books))
 }
 
 func (h *ApiHandler) SignUp(w http.ResponseWriter, r *http.Request) {
