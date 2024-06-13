@@ -10,9 +10,9 @@ type NullString struct {
 }
 
 func (ns *NullString) UnmarshalJSON(data []byte) error {
-	// Check for JSON null value
 	if string(data) == "null" {
-		ns.String, ns.Valid = "", false
+		ns.String = ""
+		ns.Valid = false
 		return nil
 	}
 
@@ -22,6 +22,7 @@ func (ns *NullString) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	ns.String, ns.Valid = s, true
+	ns.String = s
+	ns.Valid = true
 	return nil
 }
