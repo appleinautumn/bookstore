@@ -16,12 +16,14 @@ func root(w http.ResponseWriter, r *http.Request) {
 
 func NewRouter(apiHandler *handler.ApiHandler) *mux.Router {
 	r := mux.NewRouter()
-
-	r.HandleFunc("/orders", apiHandler.ListOrders).Methods("GET")
-	r.HandleFunc("/orders", apiHandler.CreateOrder).Methods("POST")
 	r.HandleFunc("/signup", apiHandler.SignUp).Methods("POST")
 	r.HandleFunc("/books", apiHandler.ListBooks).Methods("GET")
 	r.HandleFunc("/", root)
+
+	// private endpoints
+	my := r.PathPrefix("/my").Subrouter()
+	my.HandleFunc("/orders", apiHandler.ListOrders).Methods("GET")
+	my.HandleFunc("/orders", apiHandler.CreateOrder).Methods("POST")
 
 	return r
 }
