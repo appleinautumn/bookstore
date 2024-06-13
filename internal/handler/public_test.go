@@ -449,3 +449,99 @@ func TestCreateOrder(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, res.Code)
 	})
 }
+
+func TestListOrders(t *testing.T) {
+	bookService := mocks.NewBookService(t)
+	orderService := mocks.NewOrderService(t)
+	userService := mocks.NewUserService(t)
+	handler := NewApiHandler(bookService, userService, orderService)
+
+	t.Run("success", func(t *testing.T) {
+		// set user ID
+		userID := 5
+
+		// mock Orders to return
+		orders := []*types.Order{
+			{
+				ID:     rand.Int64(),
+				UserID: int64(userID),
+			},
+			{
+				ID:     rand.Int64(),
+				UserID: int64(userID),
+			},
+		}
+
+		// mock ListOrdersByUserId
+		orderService.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(orders, nil).Once()
+
+		req := httptest.NewRequest(http.MethodGet, "/orders", nil)
+		res := httptest.NewRecorder()
+
+		// set user ID in header
+		req.Header.Set("user_id", strconv.Itoa(userID))
+
+		// call ListOrders
+		handler.ListOrders(res, req)
+		defer res.Result().Body.Close()
+
+		// get body
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			t.Fatalf("Error reading body: %v", err)
+		}
+
+		// Create a variable of the wrapper with literal struct
+		var response struct {
+			Data []*types.Order `json:"data"`
+		}
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			t.Fatalf("Error unmarshaling JSON: %v", err)
+		}
+
+		orderRes := response.Data
+
+		// assert
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, res.Code)
+		assert.Equal(t, orderRes[0].ID, orders[0].ID)
+		assert.Equal(t, orderRes[0].UserID, orders[0].UserID)
+		assert.Equal(t, orderRes[1].ID, orders[1].ID)
+		assert.Equal(t, orderRes[1].UserID, orders[1].UserID)
+	})
+
+	t.Run("error - converting userID in header", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/orders", nil)
+		res := httptest.NewRecorder()
+
+		// set invalid user ID in header
+		req.Header.Set("user_id", "abc")
+
+		// call ListOrders
+		handler.ListOrders(res, req)
+		defer res.Result().Body.Close()
+
+		// assert bad request
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+	})
+
+	t.Run("error - ListOrdersByUserId error", func(t *testing.T) {
+		// mock ListOrdersByUserId
+		orderService.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(nil, errors.New("anything")).Once()
+
+		req := httptest.NewRequest(http.MethodPost, "/orders", nil)
+		res := httptest.NewRecorder()
+
+		// set user ID in header
+		req.Header.Set("user_id", strconv.Itoa(5))
+
+		// call ListOrders
+		handler.ListOrders(res, req)
+		defer res.Result().Body.Close()
+
+		// assert
+		assert.Equal(t, http.StatusInternalServerError, res.Code)
+	})
+
+}
