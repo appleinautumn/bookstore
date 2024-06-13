@@ -82,7 +82,7 @@ table books seeded
 #### List Books
 
 <details>
- <summary><code>POST</code> <code><b>/books</b></code></summary>
+  <summary><code>POST</code> <code><b>/books</b></code></summary>
 
 ##### Request Body
 
@@ -105,7 +105,7 @@ table books seeded
 #### Sign Up
 
 <details>
- <summary><code>POST</code> <code><b>/signup</b></code></summary>
+  <summary><code>POST</code> <code><b>/signup</b></code></summary>
 
 ##### Request Body
 
@@ -142,7 +142,7 @@ table books seeded
 #### Order
 
 <details>
- <summary><code>POST</code> <code><b>/orders</b></code></summary>
+  <summary><code>POST</code> <code><b>/my/orders</b></code></summary>
 
 ##### Headers
 
@@ -189,7 +189,7 @@ table books seeded
 #### List Orders
 
 <details>
- <summary><code>GET</code> <code><b>/orders</b></code></summary>
+  <summary><code>GET</code> <code><b>/my/orders</b></code></summary>
 
 ##### Headers
 
