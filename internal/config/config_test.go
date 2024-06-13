@@ -7,14 +7,23 @@ import (
 
 func TestNew(t *testing.T) {
 
-	t.Run("APP_NAME not set", func(t *testing.T) {
+	t.Run("APP_ENV not set", func(t *testing.T) {
 		_, err := New()
 		if err == nil {
 			t.Errorf(`Value: %v`, err)
 		}
 	})
 
-	t.Run("APP_ENV not set", func(t *testing.T) {
+	t.Run("APP_NAME not set", func(t *testing.T) {
+		os.Setenv("APP_ENV", "super-env")
+		_, err := New()
+		if err == nil {
+			t.Errorf(`Value: %v`, err)
+		}
+	})
+
+	t.Run("APP_PORT not set", func(t *testing.T) {
+		os.Setenv("APP_ENV", "super-env")
 		os.Setenv("APP_NAME", "super-app")
 
 		_, err := New()
@@ -24,8 +33,9 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("APP_VERSION not set", func(t *testing.T) {
-		os.Setenv("APP_NAME", "super-app")
 		os.Setenv("APP_ENV", "super-env")
+		os.Setenv("APP_NAME", "super-app")
+		os.Setenv("APP_PORT", "9999")
 
 		_, err := New()
 		if err == nil {
@@ -34,8 +44,9 @@ func TestNew(t *testing.T) {
 	})
 
 	t.Run("DB_URL not set", func(t *testing.T) {
-		os.Setenv("APP_NAME", "super-app")
 		os.Setenv("APP_ENV", "super-env")
+		os.Setenv("APP_NAME", "super-app")
+		os.Setenv("APP_PORT", "9999")
 		os.Setenv("APP_VERSION", "12.34.5")
 
 		_, err := New()
