@@ -64,13 +64,13 @@ func (h *ApiHandler) ListOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get orders
-	orders, err := h.orderService.ListOrdersByUserId(ctx, userID)
+	// get orderViews
+	orderViews, err := h.orderService.ListOrdersByUserId(ctx, userID)
 	if err != nil {
 		slog.Error("ListOrders", slog.Any("list error", err))
 		util.WriteErrorf(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	util.WriteJson(w, http.StatusOK, orders)
+	util.WriteJson(w, http.StatusOK, toOrderViewsContract(orderViews))
 }
