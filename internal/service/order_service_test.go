@@ -20,21 +20,21 @@ func TestListOrdersByUserId(t *testing.T) {
 	repository := mocks.NewOrderRepository(t)
 
 	t.Run("success", func(t *testing.T) {
-		// mock order1
-		var order1 types.Order
-		if err := faker.FakeData(&order1); err != nil {
+		// mock ov1
+		var ov1 types.OrderView
+		if err := faker.FakeData(&ov1); err != nil {
 			t.Errorf("err: %v", err)
 		}
 
-		var order2 types.Order
-		if err := faker.FakeData(&order2); err != nil {
+		var ov2 types.OrderView
+		if err := faker.FakeData(&ov2); err != nil {
 			t.Errorf("err: %v", err)
 		}
 
 		// mock orders
-		orders := []*types.Order{
-			&order1,
-			&order2,
+		orders := []*types.OrderView{
+			&ov1,
+			&ov2,
 		}
 
 		repository.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(orders, nil).Once()

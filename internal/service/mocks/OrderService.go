@@ -47,23 +47,23 @@ func (_m *OrderService) CreateOrder(ctx context.Context, req *request.OrderReque
 }
 
 // ListOrdersByUserId provides a mock function with given fields: ctx, userID
-func (_m *OrderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.Order, error) {
+func (_m *OrderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.OrderView, error) {
 	ret := _m.Called(ctx, userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListOrdersByUserId")
 	}
 
-	var r0 []*types.Order
+	var r0 []*types.OrderView
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) ([]*types.Order, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) ([]*types.OrderView, error)); ok {
 		return rf(ctx, userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int64) []*types.Order); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, int64) []*types.OrderView); ok {
 		r0 = rf(ctx, userID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*types.Order)
+			r0 = ret.Get(0).([]*types.OrderView)
 		}
 	}
 

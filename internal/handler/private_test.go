@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"io"
@@ -228,19 +229,37 @@ func TestListOrders(t *testing.T) {
 		userID := 5
 
 		// mock Orders to return
-		orders := []*types.Order{
+		orderViews := []*types.OrderView{
 			{
-				ID:     rand.Int64(),
-				UserID: int64(userID),
+				ID:        rand.Int64(),
+				UserID:    int64(userID),
+				BookID:    rand.Int64(),
+				BookTitle: faker.Word(),
+				BookAuthor: types.NullString{
+					NullString: sql.NullString{
+						String: faker.Word(),
+						Valid:  true,
+					},
+				},
+				Quantity: rand.Int32(),
 			},
 			{
-				ID:     rand.Int64(),
-				UserID: int64(userID),
+				ID:        rand.Int64(),
+				UserID:    int64(userID),
+				BookID:    rand.Int64(),
+				BookTitle: faker.Word(),
+				BookAuthor: types.NullString{
+					NullString: sql.NullString{
+						String: faker.Word(),
+						Valid:  true,
+					},
+				},
+				Quantity: rand.Int32(),
 			},
 		}
 
 		// mock ListOrdersByUserId
-		orderService.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(orders, nil).Once()
+		orderService.On("ListOrdersByUserId", mock.Anything, mock.Anything).Return(orderViews, nil).Once()
 
 		req := httptest.NewRequest(http.MethodGet, "/my/orders", nil)
 		res := httptest.NewRecorder()
@@ -260,7 +279,7 @@ func TestListOrders(t *testing.T) {
 
 		// Create a variable of the wrapper with literal struct
 		var response struct {
-			Data []*types.Order `json:"data"`
+			Data []*types.OrderView `json:"data"`
 		}
 		err = json.Unmarshal(body, &response)
 		if err != nil {
@@ -272,10 +291,10 @@ func TestListOrders(t *testing.T) {
 		// assert
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, res.Code)
-		assert.Equal(t, orderRes[0].ID, orders[0].ID)
-		assert.Equal(t, orderRes[0].UserID, orders[0].UserID)
-		assert.Equal(t, orderRes[1].ID, orders[1].ID)
-		assert.Equal(t, orderRes[1].UserID, orders[1].UserID)
+		assert.Equal(t, orderRes[0].ID, orderViews[0].ID)
+		assert.Equal(t, orderRes[0].UserID, orderViews[0].UserID)
+		assert.Equal(t, orderRes[1].ID, orderViews[1].ID)
+		assert.Equal(t, orderRes[1].UserID, orderViews[1].UserID)
 	})
 
 	t.Run("error - converting userID in header", func(t *testing.T) {
