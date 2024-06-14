@@ -19,7 +19,7 @@ func NewOrderService(repo repository.OrderRepository) *orderService {
 	}
 }
 
-func (s *orderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.Order, error) {
+func (s *orderService) ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.OrderView, error) {
 	orders, err := s.repository.ListOrdersByUserId(ctx, userID)
 	if err != nil {
 		return nil, err

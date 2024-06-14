@@ -19,10 +19,22 @@ func NewOrderRepository(db *sql.DB) *orderRepository {
 	}
 }
 
-func (r *orderRepository) ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.Order, err error) {
+func (r *orderRepository) ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.OrderView, err error) {
 	var sb strings.Builder
 
-	sb.WriteString("SELECT id, user_id, created_at, updated_at FROM orders WHERE user_id = $1")
+	sb.WriteString(`SELECT
+						o.id,
+						o.user_id,
+						ob.book_id,
+						b.title AS book_title,
+						b.author AS book_author,
+						ob.quantity,
+						o.created_at,
+						o.updated_at
+					FROM orders o
+					INNER JOIN order_books ob ON ob.order_id = o.id
+					INNER JOIN books b ON b.id = ob.book_id
+					WHERE user_id=$1`)
 	sb.WriteString(";")
 
 	rows, err := r.db.Query(sb.String(), userID)
@@ -31,16 +43,20 @@ func (r *orderRepository) ListOrdersByUserId(ctx context.Context, userID int64) 
 	}
 
 	for rows.Next() {
-		var order types.Order
+		var ov types.OrderView
 		if err := rows.Scan(
-			&order.ID,
-			&order.UserID,
-			&order.CreatedAt,
-			&order.UpdatedAt); err != nil {
+			&ov.ID,
+			&ov.UserID,
+			&ov.BookID,
+			&ov.BookTitle,
+			&ov.BookAuthor,
+			&ov.Quantity,
+			&ov.CreatedAt,
+			&ov.UpdatedAt); err != nil {
 			return nil, err
 		}
 
-		res = append(res, &order)
+		res = append(res, &ov)
 	}
 
 	return res, nil

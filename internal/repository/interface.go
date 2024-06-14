@@ -11,7 +11,7 @@ type BookRepository interface {
 }
 
 type OrderRepository interface {
-	ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.Order, err error)
+	ListOrdersByUserId(ctx context.Context, userID int64) (res []*types.OrderView, err error)
 	CreateOrder(ctx context.Context, o *types.Order) (res *types.Order, err error)
 	CreateOrderItem(ctx context.Context, oi *types.OrderItem) (err error)
 }

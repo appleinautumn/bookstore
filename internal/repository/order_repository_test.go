@@ -26,31 +26,43 @@ func TestListOrdersByUserId(t *testing.T) {
 	userID := int64(rand.IntN(100))
 
 	// mock order 1
-	var o1 types.Order
-	if err := faker.FakeData(&o1); err != nil {
+	var ov1 types.OrderView
+	if err := faker.FakeData(&ov1); err != nil {
 		t.Errorf("err: %v", err)
 	}
-	o1.UserID = userID
+	ov1.UserID = userID
 
 	// mock order 2
-	var o2 types.Order
-	if err := faker.FakeData(&o2); err != nil {
+	var ov2 types.OrderView
+	if err := faker.FakeData(&ov2); err != nil {
 		t.Errorf("err: %v", err)
 	}
-	o2.UserID = userID
+	ov2.UserID = userID
 
 	// mock list of books
-	mockList := []*types.Order{
-		&o1,
-		&o2,
+	mockList := []*types.OrderView{
+		&ov1,
+		&ov2,
 	}
 
 	t.Run("success", func(t *testing.T) {
-		sql := `SELECT id, user_id, created_at, updated_at FROM orders WHERE user_id = \$1`
+		sql := `SELECT
+						o.id,
+						o.user_id,
+						ob.book_id,
+						b.title AS book_title,
+						b.author AS book_author,
+						ob.quantity,
+						o.created_at,
+						o.updated_at
+					FROM orders o
+					INNER JOIN order_books ob ON ob.order_id = o.id
+					INNER JOIN books b ON b.id = ob.book_id
+					WHERE user_id=\$1`
 
-		mockRows := sqlmock.NewRows([]string{"id", "user_id", "created_at", "updated_at"}).
-			AddRow(o1.ID, o1.UserID, o1.CreatedAt, o1.UpdatedAt).
-			AddRow(o2.ID, o2.UserID, o2.CreatedAt, o2.UpdatedAt)
+		mockRows := sqlmock.NewRows([]string{"id", "user_id", "book_id", "book_title", "book_author", "quantity", "created_at", "updated_at"}).
+			AddRow(ov1.ID, ov1.UserID, ov1.BookID, ov1.BookTitle, ov1.BookAuthor, ov1.Quantity, ov1.CreatedAt, ov1.UpdatedAt).
+			AddRow(ov2.ID, ov2.UserID, ov2.BookID, ov2.BookTitle, ov2.BookAuthor, ov2.Quantity, ov2.CreatedAt, ov2.UpdatedAt)
 
 		mock.ExpectQuery(sql).WithArgs().WillReturnRows(mockRows)
 
@@ -64,7 +76,19 @@ func TestListOrdersByUserId(t *testing.T) {
 	})
 
 	t.Run("error - query", func(t *testing.T) {
-		sql := `SELECT id, user_id, created_at, updated_at FROM orders WHERE user_id = \$1`
+		sql := `SELECT
+						o.id,
+						o.user_id,
+						ob.book_id,
+						b.title AS book_title,
+						b.author AS book_author,
+						ob.quantity,
+						o.created_at,
+						o.updated_at
+					FROM orders o
+					INNER JOIN order_books ob ON ob.order_id = o.id
+					INNER JOIN books b ON b.id = ob.book_id
+					WHERE user_id=\$1`
 
 		mock.ExpectQuery(sql).WillReturnError(fmt.Errorf("some error"))
 
@@ -80,12 +104,24 @@ func TestListOrdersByUserId(t *testing.T) {
 	})
 
 	t.Run("error - scan", func(t *testing.T) {
-		sql := `SELECT id, user_id, created_at, updated_at FROM orders WHERE user_id = \$1`
+		sql := `SELECT
+						o.id,
+						o.user_id,
+						ob.book_id,
+						b.title AS book_title,
+						b.author AS book_author,
+						ob.quantity,
+						o.created_at,
+						o.updated_at
+					FROM orders o
+					INNER JOIN order_books ob ON ob.order_id = o.id
+					INNER JOIN books b ON b.id = ob.book_id
+					WHERE user_id=\$1`
 
 		// "abc" is not a valid id
-		mockRows := sqlmock.NewRows([]string{"id", "user_id", "created_at", "updated_at"}).
-			AddRow("abc", o1.UserID, o1.CreatedAt, o1.UpdatedAt).
-			AddRow(o2.ID, o2.UserID, o2.CreatedAt, o2.UpdatedAt)
+		mockRows := sqlmock.NewRows([]string{"id", "user_id", "book_id", "book_title", "book_author", "quantity", "created_at", "updated_at"}).
+			AddRow("abc", ov1.UserID, ov1.BookID, ov1.BookTitle, ov1.BookAuthor, ov1.Quantity, ov1.CreatedAt, ov1.UpdatedAt).
+			AddRow(ov2.ID, ov2.UserID, ov2.BookID, ov2.BookTitle, ov2.BookAuthor, ov2.Quantity, ov2.CreatedAt, ov2.UpdatedAt)
 
 		mock.ExpectQuery(sql).WillReturnRows(mockRows)
 

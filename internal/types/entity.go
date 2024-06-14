@@ -26,6 +26,17 @@ type OrderItem struct {
 	Quantity int32 `json:"quantity"`
 }
 
+type OrderView struct {
+	ID         int64      `json:"id"`
+	UserID     int64      `json:"user_id"`
+	BookID     int64      `json:"book_id"`
+	BookTitle  string     `json:"book_title"`
+	BookAuthor NullString `json:"book_author"`
+	Quantity   int32      `json:"quantity"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+}
+
 type User struct {
 	ID        int64     `json:"id"`
 	Email     string    `json:"email"`

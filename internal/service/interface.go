@@ -12,7 +12,7 @@ type BookService interface {
 }
 
 type OrderService interface {
-	ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.Order, error)
+	ListOrdersByUserId(ctx context.Context, userID int64) ([]*types.OrderView, error)
 	CreateOrder(ctx context.Context, req *request.OrderRequest) (*types.Order, error)
 }
 
